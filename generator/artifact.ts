@@ -1,7 +1,6 @@
-import { randomInt } from "crypto";
 import { ArtifactSetKey } from "../data/Data";
 import { choose, weightedChoose } from "../misc/choose";
-
+import shuffle from "../misc/shuffle";
 export interface IArtifact {
   setKey: ArtifactSetKey; //e.g. "GladiatorsFinale"
   slotKey: SlotKey; //e.g. "plume"
@@ -9,14 +8,16 @@ export interface IArtifact {
   rarity: number; //1-5 inclusive
   mainStatKey: StatKey;
   substats: ISubstat[];
+  rollValue?: number;
 }
 
 interface ISubstat {
   key: StatKey; //e.g. "critDMG_"
   value: number; //e.g. 19.4
+  substats: number; //Number of Substats
 }
 
-type SlotKey = "flower" | "plume" | "sands" | "goblet" | "circlet";
+export type SlotKey = "flower" | "plume" | "sands" | "goblet" | "circlet";
 
 export const StatKeyMapping = {
   hp: "HP",
@@ -59,39 +60,19 @@ export type StatKey =
   | "hydro_dmg_" //Hydro DMG Bonus
   | "pyro_dmg_" //Pyro DMG Bonus
   | "cryo_dmg_" //Cryo DMG Bonus
-  | "dendro_dmg_"; //Dendro DMG Bonus
-
-export const MainStats = {
-  hp: 4780,
-  hp_: 46.6,
-  atk: 311,
-  atk_: 46.6,
-  def_: 58.3,
-  critRate_: 31.1,
-  critDMG_: 62.2,
-  enerRech_: 51.8,
-  heal_: 35.9,
-  eleMas: 186.5,
-  pyro_dmg_: 46.6,
-  cryo_dmg_: 46.6,
-  hydro_dmg_: 46.6,
-  electro_dmg_: 46.6,
-  dendro_dmg_: 46.6,
-  anemo_dmg_: 46.6,
-  geo_dmg_: 46.6,
-  physical_dmg_: 58.3,
-};
+  | "dendro_dmg_" //Dendro DMG Bonus
+  | undefined;
 
 export const Substats: any = {
   hp: [209.13, 239.0, 268.88, 298.75],
-  hp_: [4.08, 4.66, 5.25, 5.83],
+  hp_: [0.0408, 0.0466, 0.0525, 0.0583],
   atk: [13.62, 15.56, 17.51, 19.45],
-  atk_: [4.08, 4.66, 5.25, 5.83],
+  atk_: [0.0408, 0.0466, 0.0525, 0.0583],
   def: [16.2, 18.52, 20.83, 23.15],
-  def_: [5.1, 5.83, 6.56, 7.29],
-  critRate_: [2.72, 3.11, 3.5, 3.89],
-  critDMG_: [5.44, 6.22, 6.99, 7.77],
-  enerRech_: [4.53, 5.18, 5.83, 6.48],
+  def_: [0.051, 0.0583, 0.0656, 0.0729],
+  critRate_: [0.0272, 0.0311, 0.035, 0.0389],
+  critDMG_: [0.0544, 0.0622, 0.0699, 0.0777],
+  enerRech_: [0.0453, 0.0518, 0.0583, 0.0648],
   eleMas: [16.32, 18.65, 20.98, 23.31],
 };
 
@@ -803,34 +784,37 @@ const subStatDistributionTable = [
 
 export const generateArtifact = (
   setKey1: ArtifactSetKey,
-  setKey2: ArtifactSetKey
+  setKey2: ArtifactSetKey,
+  mainStat?: StatKey,
+  slot?: SlotKey
 ) => {
   const artifactSet: ArtifactSetKey = choose([setKey1, setKey2]);
-  const artifactSlot: SlotKey = choose(Object.keys(StatDistribution.mainStats));
-  const artifactMainStat: StatKey = choose(
-    Object.keys(StatDistribution.mainStats[artifactSlot])
-  );
+  const artifactSlot: SlotKey =
+    slot ?? choose(Object.keys(StatDistribution.mainStats));
+  const artifactMainStat: StatKey =
+    mainStat ?? choose(Object.keys(StatDistribution.mainStats[artifactSlot]));
   const subStatDist: number[] = choose(subStatDistributionTable);
   let allowedSubstats = Object.keys(
-    StatDistribution.subStats[artifactSlot][artifactMainStat]
+    StatDistribution.subStats[artifactSlot][artifactMainStat!]
   );
 
   const subStats: ISubstat[] = [
-    ...subStatDist.map((stat) => {
+    ...shuffle<number>(subStatDist).map((stat) => {
       const statType: StatKey = weightedChoose(
         allowedSubstats,
         allowedSubstats.map(
           (substat) =>
-            StatDistribution.subStats[artifactSlot][artifactMainStat][substat]
+            StatDistribution.subStats[artifactSlot][artifactMainStat!][substat]
         )
       );
       allowedSubstats = allowedSubstats.filter((stat) => stat !== statType);
       return {
         key: statType,
+        substats: stat + 1,
         value: new Array(stat + 1)
           .fill(1)
           .map((subStatIndex) => {
-            const val = choose(Substats[statType]);
+            const val = choose(Substats[statType!]);
             return val;
           })
           .reduce((partialSum, a) => partialSum + a, 0),
@@ -846,4 +830,16 @@ export const generateArtifact = (
     substats: subStats,
   };
   return artifact;
+};
+
+export const genEmptyArtifact = (mainSlot: SlotKey) => {
+  const EmptyArtifact: IArtifact = {
+    level: 0,
+    setKey: undefined,
+    mainStatKey: undefined,
+    rarity: 0,
+    slotKey: mainSlot,
+    substats: [],
+  };
+  return EmptyArtifact;
 };

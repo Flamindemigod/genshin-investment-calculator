@@ -1,7 +1,5 @@
-import { randomInt } from "crypto";
-
 export function choose(options: any[]) {
-  const index = randomInt(options.length);
+  const index = Math.floor(Math.random() * options.length);
   return options[index];
 }
 

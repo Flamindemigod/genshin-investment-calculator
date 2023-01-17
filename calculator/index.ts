@@ -1,3 +1,28 @@
+export type Reactions =
+  | "BURGEON"
+  | "HYPERBLOOM"
+  | "OVERLOADED"
+  | "BLOOM"
+  | "SHATTERED"
+  | "ELECTRO-CHARGED"
+  | "SWIRL"
+  | "SUPERCONDUCT"
+  | "BURNING"
+  | "VAPE"
+  | "REV-VAPE"
+  | "MELT"
+  | "REV-MELT";
+
+export type DamageTypes =
+  | "dendro"
+  | "geo"
+  | "anemo"
+  | "cryo"
+  | "electro"
+  | "hydro"
+  | "pyro"
+  | "physical";
+
 export interface Props {
   MotionValue?: {
     ATK?: number;
@@ -16,24 +41,9 @@ export interface Props {
     Talent: number;
   };
   FlatDamage?: number;
-  DamageType:
-    | "Dendro"
-    | "Geo"
-    | "Anemo"
-    | "Cryo"
-    | "Electro"
-    | "Hydro"
-    | "Pyro"
-    | "Phys";
+  DamageType: DamageTypes;
   DamageBonus?: {
-    Phys?: number;
-    Pyro?: number;
-    Hydro?: number;
-    Electro?: number;
-    Cryo?: number;
-    Anemo?: number;
-    Geo?: number;
-    Dendro?: number;
+    [key in DamageTypes]: number;
   };
   DamageReduction?: number;
   CritRate?: number;
@@ -44,14 +54,7 @@ export interface Props {
   DefIgnore?: number;
   // Resistance in percentage
   Resistance?: {
-    Phys?: number;
-    Pyro?: number;
-    Hydro?: number;
-    Electro?: number;
-    Cryo?: number;
-    Anemo?: number;
-    Geo?: number;
-    Dendro?: number;
+    [key in DamageTypes]: number;
   };
 
   AmplifyingReaction?: "VAPE" | "REV-VAPE" | "MELT" | "REV-MELT";
@@ -68,7 +71,7 @@ export interface Props {
     | "BURNING";
   TransformativeReactionBonus?: number;
   ECTriggers?: number;
-  SwirledElement?: "Cryo" | "Electro" | "Hydro" | "Pyro";
+  SwirledElement?: "cryo" | "elctro" | "hydro" | "pyro";
   AdditiveReaction?: "SPREAD" | "AGGRAVATE";
   AdditiveReactionBonus?: number;
   Proc?: {
@@ -80,15 +83,7 @@ export interface Props {
     };
     CritRate?: number;
     CritDamage?: number;
-    DamageType:
-      | "Dendro"
-      | "Geo"
-      | "Anemo"
-      | "Cryo"
-      | "Electro"
-      | "Hydro"
-      | "Pyro"
-      | "Phys";
+    DamageType: DamageTypes;
     AmplifyingReaction?: "VAPE" | "REV-VAPE" | "MELT" | "REV-MELT";
     AmplifyingReactionBonus?: number;
     TransformativeReaction?:
@@ -155,10 +150,10 @@ const levelMultiplier = [
 
 export const calculate = (props: Props) => {
   const CritMultiplier = (cr: number, cd: number) => {
-    return 1 + (Math.min(Math.max(cr, 0), 100) / 100) * (cd / 100);
+    return 1 + Math.min(Math.max(cr, 0), 100) * cd;
   };
   const DamageBonusMultiplier = (dmgBonus: number, dmgReduction: number) => {
-    return 1 + Math.max(dmgBonus, 0) / 100 - Math.max(dmgReduction, 0) / 100;
+    return 1 + Math.max(dmgBonus, 0) - Math.max(dmgReduction, 0);
   };
   const DefMultiplier = (
     charLevel: number,
@@ -170,9 +165,7 @@ export const calculate = (props: Props) => {
     const denominator =
       charLevel +
       100 +
-      (enemyLevel + 100) *
-        (1 - Math.min(defReduction, 90) / 100) *
-        (1 - defIgnore / 100);
+      (enemyLevel + 100) * (1 - Math.min(defReduction, 90)) * (1 - defIgnore);
     return numerator / denominator;
   };
   const EnemyResistanceMultiplier = (resistance: number) => {
@@ -326,7 +319,6 @@ export const calculate = (props: Props) => {
       }).reduce((partialSum, a) => partialSum + a, 0);
     } else return 0;
   };
-
   const output =
     ((((props.MotionValue?.ATK ?? 0) / 100) * (props.StatValue?.ATK ?? 0) +
       ((props.MotionValue?.DEF ?? 0) / 100) * (props.StatValue?.DEF ?? 0) +

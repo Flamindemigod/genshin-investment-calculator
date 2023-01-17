@@ -11,7 +11,7 @@ export const artifactSetsNames = artifacts("5", { matchCategories: true });
 export const characterNames = characters("name", { matchCategories: true });
 export const weaponNames = weapons("name", { matchCategories: true });
 
-export const artifactGroups = [
+export const artifactGroups: { sets: ArtifactSetKey[]; cost: number }[] = [
   { sets: ["ArchaicPetra", "RetracingBolide"], cost: 20 },
   { sets: ["BlizzardStrayer", "HeartOfDepth"], cost: 20 },
   { sets: ["BloodstainedChivalry", "NoblesseOblige"], cost: 20 },
@@ -57,6 +57,7 @@ export const setKeyMapping = {
 };
 
 export type ArtifactSetKey =
+  | undefined
   | "ArchaicPetra" //Archaic Petra
   | "BlizzardStrayer" //Blizzard Strayer
   | "BloodstainedChivalry" //Bloodstained Chivalry
