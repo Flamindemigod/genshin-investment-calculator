@@ -320,10 +320,10 @@ export const calculate = (props: Props) => {
     } else return 0;
   };
   const output =
-    ((((props.MotionValue?.ATK ?? 0) / 100) * (props.StatValue?.ATK ?? 0) +
-      ((props.MotionValue?.DEF ?? 0) / 100) * (props.StatValue?.DEF ?? 0) +
-      ((props.MotionValue?.HP ?? 0) / 100) * (props.StatValue?.HP ?? 0) +
-      ((props.MotionValue?.EM ?? 0) / 100) * (props.StatValue?.EM ?? 0)) *
+    (((props.MotionValue?.ATK ?? 0) * (props.StatValue?.ATK ?? 0) +
+      (props.MotionValue?.DEF ?? 0) * (props.StatValue?.DEF ?? 0) +
+      (props.MotionValue?.HP ?? 0) * (props.StatValue?.HP ?? 0) +
+      (props.MotionValue?.EM ?? 0) * (props.StatValue?.EM ?? 0)) *
       SpecialMultipler(props.SpecialMultiplier) +
       (props.FlatDamage ?? 0) +
       AdditiveDamage(

@@ -1,5 +1,6 @@
 import { Character } from "../character/character";
 import { Raiden } from "../character/RaidenShogun";
+import { EngulfingLightning } from "../weapons/engulfinglightning";
 import { TheCatch } from "../weapons/thecatch";
 import { Weapon } from "../weapons/weapon";
 
@@ -8,6 +9,7 @@ export const reviverMapping: { [key: string]: any } = {
   Raiden: Raiden,
   Weapon: Weapon,
   TheCatch: TheCatch,
+  EngulfingLightning: EngulfingLightning,
 };
 
 export const reviver = (json: string) => {

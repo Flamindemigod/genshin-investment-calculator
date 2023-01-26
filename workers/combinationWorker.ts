@@ -1,51 +1,57 @@
 import bigCartesian from "big-cartesian";
-import { Character } from "../character/character";
-import { defaultBuffs } from "../common";
+import {
+  Character,
+  defaultIsActive,
+  defaultStacks,
+} from "../character/character";
+import { Buffs, defaultBuffs } from "../common";
+import { IPreset } from "../common/presets";
 import { IArtifact } from "../generator/artifact";
+import { addObjects } from "../misc/addObjects";
 import { reviver } from "./reviver";
 
 addEventListener("message", (e) => {
-  const [character, flowers, plumes, sands, goblets, circlets]: [
+  const [character, flowers, plumes, sands, goblets, circlets, preset]: [
     string,
     IArtifact[],
     IArtifact[],
     IArtifact[],
     IArtifact[],
-    IArtifact[]
+    IArtifact[],
+    IPreset
   ] = e.data;
   const char: Character = reviver(character);
   let i = 0;
   for (let build of bigCartesian([flowers, plumes, sands, goblets, circlets])) {
     char.equipArtifacts(build);
-    const charBuffs = char.getBuffs(
-      { weapon: 0, artifact: 0 },
-      {
-        artifactPassive: true,
-        weaponPassive: true,
-      }
-    );
-    const [dmg, props] = char.getDamage([
-      {
-        MV: { ATK: 721.4, DEF: 0, EM: 0, HP: 0 },
-        buffs: {
-          ...charBuffs,
-          atk_: 0.2,
-          atk: 1997,
-          resistance: { ...charBuffs.resistance, electro: -40 },
-          critDMG_Elemental: {
-            ...charBuffs.critDMG_Elemental,
-            electro: charBuffs.critDMG_Elemental.electro + 0.6,
-          },
-          dmgBonusElemental: {
-            ...charBuffs.dmgBonusElemental,
-            electro: charBuffs.dmgBonusElemental.electro + 0.416,
-          },
-        },
-        DamageType: "electro",
-        reaction: undefined,
-        SkillType: "burst",
-      },
-    ])[0];
-    postMessage([i++, dmg, build, char.getCharacterStats(), props]);
+    const dmg = char
+      .getDamage(
+        preset.config.map((config) => {
+          const charBuffs = char.getBuffs(config.stacks, config.isActive);
+          const MV = char.getMotionValue(config.skillType, config.label);
+          return {
+            MV: { ATK: 0, DEF: 0, HP: 0, EM: 0, ...MV },
+            stacks: config.stacks,
+            isActive: config.isActive,
+            buffs: addObjects<Buffs>(
+              defaultBuffs,
+              charBuffs,
+              preset.globalBuffs,
+              config.buffs
+            ),
+            DamageType: config.dmgType,
+            reaction: undefined,
+            SkillType: config.skillType,
+          };
+        })
+      )
+      .reduce((partialSum, a) => partialSum + a, 0);
+    postMessage([
+      i++,
+      dmg,
+      build,
+      char.getCharacterStats(defaultStacks, defaultIsActive),
+    ]);
+    // break;
   }
 });

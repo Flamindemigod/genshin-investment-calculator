@@ -1,6 +1,6 @@
 import { Jsonizer, Reviver } from "@badcafe/jsonizer";
 import { Buffs, CharacterStats, defaultBuffs } from "../../common";
-import { Character } from "../character";
+import { Character, defaultIsActive, defaultStacks } from "../character";
 
 interface teamBuffConditionals {
   skill: boolean;
@@ -31,9 +31,8 @@ export class Raiden extends Character {
           ...defaultBuffs.dmgBonusSkill,
           burst: isActive.skill
             ? characterStats.burstCost *
-              this.talents.skill.attributes!["elemental burst dmg bonus0"][
-                this.talents.skill.level - 1
-              ]
+              this.talents.skill.attributes!["elemental burst dmg bonus0"]
+                .scalings[this.talents.skill.level - 1]
             : 0,
         },
       };
@@ -41,7 +40,7 @@ export class Raiden extends Character {
     };
 
     this.talents.a4.getBuffs = () => {
-      const charStats = this.getCharacterStats();
+      const charStats = this.getCharacterStats(defaultStacks, defaultIsActive);
       const buffs: Buffs = {
         ...defaultBuffs,
         dmgBonusElemental: {
@@ -58,12 +57,11 @@ export class Raiden extends Character {
         dmgBonusSkill: {
           ...defaultBuffs.dmgBonusSkill,
           burst:
-            this.talents.burst.attributes!["energy cost0"][
+            this.talents.burst.attributes!["energy cost0"].scalings[
               this.talents.burst.level - 1
             ] *
-            this.talents.skill.attributes!["elemental burst dmg bonus0"][
-              this.talents.skill.level - 1
-            ],
+            this.talents.skill.attributes!["elemental burst dmg bonus0"]
+              .scalings[this.talents.skill.level - 1],
         },
       };
       return buffs;

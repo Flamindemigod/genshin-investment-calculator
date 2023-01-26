@@ -52,6 +52,7 @@ export class Weapon {
       [this.stats.subStat as string]: this.stats.specialized,
     } as Buffs;
   };
+  getPreBuffs!: (stacks: number, passiveActive: boolean) => Buffs;
   getBuffs!: (
     stacks: number,
     characterStats: CharacterStats,
