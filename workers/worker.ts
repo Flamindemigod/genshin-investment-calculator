@@ -1,6 +1,4 @@
 import { Character } from "../character/character";
-import { Raiden } from "../character/RaidenShogun";
-import { presets } from "../character/RaidenShogun/presets";
 import { IPreset } from "../common/presets";
 import { ArtifactSetKey } from "../data/Data";
 import { genEmptyArtifact, StatKey } from "../generator/artifact";
@@ -10,8 +8,16 @@ import {
 } from "../generator/combinator";
 import { Inventory } from "../generator/inventory";
 import { getRollValue } from "../misc/getRollValue";
-import { EngulfingLightning } from "../weapons/engulfinglightning";
-let G = require("generatorics");
+import { reviver } from "./reviver";
+
+export interface WorkerProps {
+  state: "start" | "stop";
+  character: string;
+  preset: IPreset;
+  artifactSets: { sets: ArtifactSetKey[]; cost: number }[];
+  resin: number;
+}
+
 let workers: Worker[] = [];
 let i = 0;
 function calcDamage(
@@ -27,7 +33,6 @@ function calcDamage(
   post: any
 ) {
   const worker = new Worker(new URL("./combinationWorker.ts", import.meta.url));
-  console.log(combination);
   let flowers = inv.inventory
     .filter((item) => item.slotKey === "flower")
     .filter((item) => item.setKey === combination.keys[combination.shape[0]])
@@ -72,21 +77,22 @@ function calcDamage(
 }
 
 addEventListener("message", (e) => {
-  if (e.data[0] == "start") {
-    let runningState = "running";
-    const resin: number = e.data[1];
-    const artifactSets: { sets: ArtifactSetKey[]; cost: number } = e.data[2];
-    // const artifactSets1: { sets: ArtifactSetKey[]; cost: number } = e.data[3];
-    const raiden = new Raiden(90, { normal: 2, skill: 9, burst: 10 }, 2, true);
-    raiden.equipWeapon(new EngulfingLightning(90, true, 5));
-    const preset = presets[0];
-    let builds: string[][] = [];
+  const data = <WorkerProps>e.data;
+  if (data.state === "start") {
+    const resin: number = data.resin;
+    const artifactSets: { sets: ArtifactSetKey[]; cost: number }[] =
+      data.artifactSets;
+    const char = reviver(data.character);
+    const preset = data.preset;
     const optimizationContributions: StatKey[] =
       preset.optimizationContributions;
-    const inv = new Inventory(resin, artifactSets);
-    // const inv1 = new Inventory(resin / 2, artifactSets1);
 
-    const shapeArray = generateShapes(2);
+    const inv = artifactSets
+      .map((sets) => new Inventory(resin / artifactSets.length, sets))
+      .reduce((inv, a) => {
+        return inv.addInventory(a);
+      }, new Inventory(0, artifactSets[0]));
+    const shapeArray = generateShapes(artifactSets.length);
 
     const artifactCombinationGenerator = generateArtifactCombinations(
       shapeArray,
@@ -96,7 +102,6 @@ addEventListener("message", (e) => {
       (item) => (item.rollValue = getRollValue(item, optimizationContributions))
     );
     inv.inventory.sort((a, b) => b.rollValue! - a.rollValue!);
-    // console.log(inv.inventory.length);
     const rollValue1Sigma = inv.inventory[0].rollValue! * (1 - 0.341);
     inv.inventory = inv.inventory.filter((item, index) => {
       switch (true) {
@@ -109,15 +114,13 @@ addEventListener("message", (e) => {
       }
       return true;
     });
-    console.log(inv.inventory.length);
     // if (inv.inventory.length > 75) {
     //   inv.inventory = inv.inventory.slice(0, 75);
     // }
-    // console.log(inv.inventory.length);
 
     for (let combination of artifactCombinationGenerator) {
       {
-        calcDamage(combination, inv, raiden, preset, postMessage);
+        calcDamage(combination, inv, char, preset, postMessage);
       }
     }
   } else {

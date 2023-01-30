@@ -2,10 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Props } from "../calculator";
+import { Raiden } from "../character/RaidenShogun";
+import { presets } from "../character/RaidenShogun/presets";
 import { CharacterStats } from "../common";
 
 import { artifactGroups } from "../data/Data";
 import { IArtifact } from "../generator/artifact";
+import { EngulfingLightning } from "../weapons/engulfinglightning";
+import { WorkerProps } from "../workers/worker";
 
 function Home() {
   const workerRef = useRef<Worker>();
@@ -52,12 +56,16 @@ function Home() {
   }, []);
 
   const handleWork = useCallback(async () => {
-    workerRef.current?.postMessage([
-      "start",
-      100000,
-      artifactGroups[7],
-      artifactGroups[2],
-    ]);
+    const char = new Raiden(90, { normal: 10, skill: 10, burst: 10 }, 2, true);
+    char.equipWeapon(new EngulfingLightning(90, true, 5));
+    const props: WorkerProps = {
+      state: "start",
+      character: JSON.stringify(char),
+      artifactSets: [artifactGroups[7]],
+      preset: presets[0],
+      resin: 1000,
+    };
+    workerRef.current?.postMessage(props);
   }, []);
   return (
     <div className="">

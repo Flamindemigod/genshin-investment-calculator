@@ -16,6 +16,11 @@ export class Inventory {
     );
   }
 
+  addInventory(inv: Inventory) {
+    this.inventory = this.inventory.concat(inv.inventory);
+    return this;
+  }
+
   g(post: any, optimizationContributions: StatKey[]) {
     // const shapeArray = generateShapes(2);
     // generateCombinations(shapeArray, this.inventory);
