@@ -2,12 +2,15 @@ import { Character } from "../character/character";
 import { Raiden } from "../character/RaidenShogun";
 import { CalamityQueller } from "../weapons/calamityqueller";
 import { EngulfingLightning } from "../weapons/engulfinglightning";
+import { MissiveWindspear } from "../weapons/missivewindspear";
+import { Moonpiercer } from "../weapons/moonpiercer";
 import { PrimodialJadeWingedSpear } from "../weapons/primodialjadewingedspear";
 import { SkywardSpine } from "../weapons/skywardspine";
 import { StaffOfHoma } from "../weapons/staffofhoma";
 import { StaffOfTheScarletSands } from "../weapons/staffofthescarletsands";
 import { TheCatch } from "../weapons/thecatch";
 import { VortexVanquisher } from "../weapons/vortexvanquisher";
+import { WavebreakersFin } from "../weapons/wavebreakersfin";
 import { Weapon } from "../weapons/weapon";
 
 export const reviverMapping: { [key: string]: any } = {
@@ -22,6 +25,9 @@ export const reviverMapping: { [key: string]: any } = {
   VortexVanquisher: VortexVanquisher,
   SkywardSpine: SkywardSpine,
   StaffOfHoma: StaffOfHoma,
+  MissiveWindspear: MissiveWindspear,
+  Moonpiercer: Moonpiercer,
+  WavebreakersFin: WavebreakersFin,
 };
 
 export const reviver = (json: string) => {

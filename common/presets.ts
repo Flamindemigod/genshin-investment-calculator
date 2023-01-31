@@ -19,4 +19,5 @@ export interface IPreset {
   globalBuffs: Buffs;
   optimizationContributions: StatKey[];
   config: presetConfig[];
+  partyBurstCost: number;
 }

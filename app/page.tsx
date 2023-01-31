@@ -12,6 +12,7 @@ import { EngulfingLightning } from "../weapons/engulfinglightning";
 import { PrimodialJadeWingedSpear } from "../weapons/primodialjadewingedspear";
 import { StaffOfHoma } from "../weapons/staffofhoma";
 import { StaffOfTheScarletSands } from "../weapons/staffofthescarletsands";
+import { WavebreakersFin } from "../weapons/wavebreakersfin";
 import { WorkerProps } from "../workers/worker";
 
 function Home() {
@@ -59,13 +60,19 @@ function Home() {
   }, []);
 
   const handleWork = useCallback(async () => {
-    const char = new Raiden(90, { normal: 10, skill: 10, burst: 13 }, 3, true);
-    char.equipWeapon(new StaffOfHoma(90, true, 1));
+    const char = new Raiden(90, { normal: 10, skill: 10, burst: 10 }, 2, true);
+    char.equipWeapon(new WavebreakersFin(90, true, 5));
     const props: WorkerProps = {
       state: "start",
       character: JSON.stringify(char),
       artifactSets: [artifactGroups[7]],
-      preset: presets[0],
+      preset: {
+        ...presets[0],
+        config: presets[0].config.map((config) => {
+          config.stacks.weapon = presets[0].partyBurstCost;
+          return config;
+        }),
+      },
       resin: 5000,
     };
     workerRef.current?.postMessage(props);

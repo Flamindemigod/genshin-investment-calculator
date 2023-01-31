@@ -8,6 +8,11 @@ export const presets: IPreset[] = [
     description:
       "C3 Raiden, C6R1 Skyward Harp Sara, C0R1 Kazuha 4VV @ 1000EM, C6R1 Mistsplitter Bennett 4NO",
     talents: { normal: 10, skill: 10, burst: 13 },
+    partyBurstCost:
+      80 + //Sara
+      60 + //Kazuha
+      60, //Bennett
+
     globalBuffs: {
       ...defaultBuffs,
       atk_: 0.2,
