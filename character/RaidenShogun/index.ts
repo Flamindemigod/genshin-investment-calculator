@@ -1,4 +1,3 @@
-import { Jsonizer, Reviver } from "@badcafe/jsonizer";
 import { Buffs, CharacterStats, defaultBuffs } from "../../common";
 import { Character, defaultIsActive, defaultStacks } from "../character";
 
@@ -20,25 +19,6 @@ export class Raiden extends Character {
   ) {
     super("raiden", level, isAscended, talents, con);
     this.className = "Raiden";
-    this.teamBuffs = (
-      characterStats: CharacterStats,
-      isActive: teamBuffConditionals
-    ): Buffs => {
-      let buffs: Buffs = {
-        ...defaultBuffs,
-        atk_: this.cons.c4.enabled && isActive.c4 ? 0.3 : 0,
-        dmgBonusSkill: {
-          ...defaultBuffs.dmgBonusSkill,
-          burst: isActive.skill
-            ? characterStats.burstCost *
-              this.talents.skill.attributes!["elemental burst dmg bonus0"]
-                .scalings[this.talents.skill.level - 1]
-            : 0,
-        },
-      };
-      return buffs;
-    };
-
     this.talents.a4.getBuffs = () => {
       const charStats = this.getCharacterStats(defaultStacks, defaultIsActive);
       const buffs: Buffs = {
@@ -65,6 +45,16 @@ export class Raiden extends Character {
         },
       };
       return buffs;
+    };
+
+    this.cons.c2.getBuffs = (stack: number, isActive: boolean) => {
+      if (this.cons.c2.enabled) {
+        let buffs: Buffs = {
+          ...defaultBuffs,
+          defIgnore: 0.6,
+        };
+        return buffs;
+      } else return defaultBuffs;
     };
   }
 }

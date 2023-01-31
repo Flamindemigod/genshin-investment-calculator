@@ -46,10 +46,34 @@ export class Weapon {
     subStat: StatKey;
   };
 
+  getSpecializedStat(stat: StatKey) {
+    return this.stats.subStat === stat ? this.stats.specialized : 0;
+  }
   getStats = () => {
     return {
       ...defaultBuffs,
-      [this.stats.subStat as string]: this.stats.specialized,
+      enerRech_: this.getSpecializedStat("enerRech_"),
+      atk_: this.getSpecializedStat("atk_"),
+      critRate_: {
+        normal: this.getSpecializedStat("critRate_"),
+        burst: this.getSpecializedStat("critRate_"),
+        charged: this.getSpecializedStat("critRate_"),
+        plunging: this.getSpecializedStat("critRate_"),
+        skill: this.getSpecializedStat("critRate_"),
+      },
+      hp_: this.getSpecializedStat("hp_"),
+      critDMG_Elemental: {
+        anemo: this.getSpecializedStat("critDMG_"),
+        cryo: this.getSpecializedStat("critDMG_"),
+        dendro: this.getSpecializedStat("critDMG_"),
+        electro: this.getSpecializedStat("critDMG_"),
+        geo: this.getSpecializedStat("critDMG_"),
+        hydro: this.getSpecializedStat("critDMG_"),
+        physical: this.getSpecializedStat("critDMG_"),
+        pyro: this.getSpecializedStat("critDMG_"),
+      },
+      eleMas: this.getSpecializedStat("eleMas"),
+      def_: this.getSpecializedStat("def_"),
     } as Buffs;
   };
   getPreBuffs!: (stacks: number, passiveActive: boolean) => Buffs;
@@ -65,6 +89,7 @@ export class Weapon {
     isAccended: boolean = false
   ) {
     const weapon = weapons(name, { verboseCategories: true });
+    console.log(weapon?.substat);
     this.level = level;
     this.isAscended = isAccended;
     this.name = weapon?.name!;

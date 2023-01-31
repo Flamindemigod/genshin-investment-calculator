@@ -5,10 +5,13 @@ import { Props } from "../calculator";
 import { Raiden } from "../character/RaidenShogun";
 import { presets } from "../character/RaidenShogun/presets";
 import { CharacterStats } from "../common";
-
 import { artifactGroups } from "../data/Data";
 import { IArtifact } from "../generator/artifact";
+import { CalamityQueller } from "../weapons/calamityqueller";
 import { EngulfingLightning } from "../weapons/engulfinglightning";
+import { PrimodialJadeWingedSpear } from "../weapons/primodialjadewingedspear";
+import { StaffOfHoma } from "../weapons/staffofhoma";
+import { StaffOfTheScarletSands } from "../weapons/staffofthescarletsands";
 import { WorkerProps } from "../workers/worker";
 
 function Home() {
@@ -56,14 +59,14 @@ function Home() {
   }, []);
 
   const handleWork = useCallback(async () => {
-    const char = new Raiden(90, { normal: 10, skill: 10, burst: 10 }, 2, true);
-    char.equipWeapon(new EngulfingLightning(90, true, 5));
+    const char = new Raiden(90, { normal: 10, skill: 10, burst: 13 }, 3, true);
+    char.equipWeapon(new StaffOfHoma(90, true, 1));
     const props: WorkerProps = {
       state: "start",
       character: JSON.stringify(char),
       artifactSets: [artifactGroups[7]],
       preset: presets[0],
-      resin: 1000,
+      resin: 5000,
     };
     workerRef.current?.postMessage(props);
   }, []);

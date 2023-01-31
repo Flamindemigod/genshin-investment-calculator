@@ -15,6 +15,7 @@ export interface presetConfig {
 export interface IPreset {
   name: string;
   description: string;
+  talents: { normal: number; skill: number; burst: number };
   globalBuffs: Buffs;
   optimizationContributions: StatKey[];
   config: presetConfig[];

@@ -605,11 +605,15 @@ export class Character {
     skillType: "normal" | "skill" | "burst" | "a1" | "a4",
     label: string
   ) {
-    const talent = this.talents[skillType];
-    return {
-      [talent.attributes![label].stat]:
-        talent.attributes![label].scalings[talent.level - 1],
-    };
+    if (!!label) {
+      const talent = this.talents[skillType];
+      return {
+        [talent.attributes![label].stat]:
+          talent.attributes![label].scalings[talent.level - 1],
+      };
+    } else {
+      return {};
+    }
   }
 
   getDamage(
@@ -630,7 +634,7 @@ export class Character {
         EnemyLevel: 90,
         CharacterLevel: this.level,
         DamageType: Ele.DamageType,
-        MotionValue: Ele.MV,
+        MotionValue: addObjects(Ele.MV, Ele.buffs.MV[Ele.SkillType]),
         CritRate:
           charStats.critRate_[Ele.SkillType] +
           Ele.buffs.critRate_[Ele.SkillType],
@@ -680,6 +684,7 @@ export class Character {
           EM: charStats.eleMas + Ele.buffs.eleMas,
         },
       };
+      console.log(props);
       damage.push(calculate(props));
     });
     return damage;

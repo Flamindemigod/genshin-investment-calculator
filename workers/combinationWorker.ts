@@ -52,6 +52,5 @@ addEventListener("message", (e) => {
       build,
       char.getCharacterStats(defaultStacks, defaultIsActive),
     ]);
-    // break;
   }
 });

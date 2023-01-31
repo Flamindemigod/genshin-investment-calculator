@@ -80,7 +80,14 @@ export interface Buffs {
   def: number;
   def_: number;
   eleMas: number;
-  MV: Skills;
+  MV: {
+    [key in keyof Skills]: {
+      ATK: number;
+      DEF: number;
+      EM: number;
+      HP: number;
+    };
+  };
   enerRech_: number;
   flatDamage: number;
   critRate_: Skills;
@@ -126,7 +133,13 @@ export const defaultBuffs: Buffs = {
   def: 0,
   def_: 0,
   eleMas: 0,
-  MV: { normal: 0, burst: 0, charged: 0, plunging: 0, skill: 0 },
+  MV: {
+    normal: { ATK: 0, DEF: 0, HP: 0, EM: 0 },
+    burst: { ATK: 0, DEF: 0, HP: 0, EM: 0 },
+    charged: { ATK: 0, DEF: 0, HP: 0, EM: 0 },
+    plunging: { ATK: 0, DEF: 0, HP: 0, EM: 0 },
+    skill: { ATK: 0, DEF: 0, HP: 0, EM: 0 },
+  },
   enerRech_: 0,
   flatDamage: 0,
   critRate_: { normal: 0, burst: 0, charged: 0, plunging: 0, skill: 0 },
