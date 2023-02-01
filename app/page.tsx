@@ -60,8 +60,8 @@ function Home() {
   }, []);
 
   const handleWork = useCallback(async () => {
-    const char = new Raiden(90, { normal: 10, skill: 10, burst: 10 }, 2, true);
-    char.equipWeapon(new WavebreakersFin(90, true, 5));
+    const char = new Raiden(90, { normal: 10, skill: 10, burst: 13 }, 3, true);
+    char.equipWeapon(new EngulfingLightning(90, true, 5));
     const props: WorkerProps = {
       state: "start",
       character: JSON.stringify(char),
@@ -73,7 +73,7 @@ function Home() {
           return config;
         }),
       },
-      resin: 5000,
+      resin: 33600,
     };
     workerRef.current?.postMessage(props);
   }, []);

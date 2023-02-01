@@ -1,4 +1,5 @@
-import { IArtifact, StatKey, Substats } from "../generator/artifact";
+import { IArtifact, StatKey } from "../generator/artifact";
+import { Substats } from "../generator/artifactProbabilities";
 
 export const getRollValue = (
   artifact: IArtifact,

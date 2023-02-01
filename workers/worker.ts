@@ -36,22 +36,22 @@ function calcDamage(
   let flowers = inv.inventory
     .filter((item) => item.slotKey === "flower")
     .filter((item) => item.setKey === combination.keys[combination.shape[0]])
-    .slice(0, 10);
+    .slice(0, 20);
   let plumes = inv.inventory
     .filter((item) => item.slotKey === "plume")
     .filter((item) => item.setKey === combination.keys[combination.shape[1]])
-    .slice(0, 10);
+    .slice(0, 20);
   let sands = inv.inventory
     .filter((item) => item.slotKey === "sands")
     .filter((item) => item.setKey === combination.keys[combination.shape[2]])
-    .slice(0, 10);
+    .slice(0, 20);
   let goblets = inv.inventory
     .filter((item) => item.slotKey === "goblet")
     .filter((item) => item.setKey === combination.keys[combination.shape[3]])
-    .slice(0, 10);
+    .slice(0, 20);
   let circlets = inv.inventory
     .filter((item) => item.slotKey === "circlet")
-    .slice(0, 10);
+    .slice(0, 20);
 
   flowers = flowers.length ? flowers : [genEmptyArtifact("flower")];
   plumes = plumes.length ? plumes : [genEmptyArtifact("plume")];
